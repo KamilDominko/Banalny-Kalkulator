@@ -2,6 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 
 
+class NumButton(ttk.Button):
+    def __init__(self, master, numer, kalkulator):
+        super().__init__(master, text=str(numer), command=lambda: kalkulator.click_num_btn(numer))
+
+
 class Kalkulator:
     def __init__(self):
         self.zmn1 = None
@@ -30,7 +35,7 @@ class Kalkulator:
         center_y = int(screen_height / 2 - self.root.winfo_height() / 2)
         return center_x, center_y
 
-    def ustawienia_programu(self):  # NA PRZYSZŁOŚĆ
+    def ustawienia_programu(self):
         self.root.title("Banalny Kalkulator")  # ustawia tytuł programu
         self.root.resizable(False, False)  # możliwosć zmiany rozmiarów okna myszką
         self.root.attributes('-alpha', 0.9)  # przezroczystość okna 0.0 - przezroczyste
@@ -48,26 +53,16 @@ class Kalkulator:
         display.pack(ipady=20, fill="both")
 
     def stworz_klawisze_cyfr(self, keyboard_frame, pad, ipad):
-        ttk.Button(keyboard_frame, text="1", command=lambda: self.click_num_btn(1))\
-            .grid(column=0, row=2, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="2", command=lambda: self.click_num_btn(2))\
-            .grid(column=1, row=2, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="3", command=lambda: self.click_num_btn(3))\
-            .grid(column=2, row=2, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="4", command=lambda: self.click_num_btn(4))\
-            .grid(column=0, row=1, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="5", command=lambda: self.click_num_btn(5))\
-            .grid(column=1, row=1, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="6", command=lambda: self.click_num_btn(6))\
-            .grid(column=2, row=1, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="7", command=lambda: self.click_num_btn(7))\
-            .grid(column=0, row=0, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="8", command=lambda: self.click_num_btn(8))\
-            .grid(column=1, row=0, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="9", command=lambda: self.click_num_btn(9))\
-            .grid(column=2, row=0, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="0", command=lambda: self.click_num_btn(0))\
-            .grid(column=0, row=3, padx=pad, pady=pad, ipady=ipad, columnspan=2, sticky="NSWE")
+        NumButton(keyboard_frame, 1, self).grid(column=0, row=2, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 2, self).grid(column=1, row=2, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 3, self).grid(column=2, row=2, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 4, self).grid(column=0, row=1, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 5, self).grid(column=1, row=1, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 6, self).grid(column=2, row=1, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 7, self).grid(column=0, row=0, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 8, self).grid(column=1, row=0, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 9, self).grid(column=2, row=0, padx=pad, pady=pad, ipady=ipad)
+        NumButton(keyboard_frame, 0, self).grid(column=0, row=3, padx=pad, pady=pad, ipady=ipad, columnspan=2, sticky="NSWE")
 
     def stworz_klawisze_operacji(self, keyboard_frame, pad, ipad):
         ttk.Button(keyboard_frame, text="*").grid(column=3, row=0, padx=pad, pady=pad, ipady=ipad)
