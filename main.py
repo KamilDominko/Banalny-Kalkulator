@@ -7,6 +7,53 @@ class NumButton(ttk.Button):
         super().__init__(master, text=str(numer), command=lambda: kalkulator.click_num_btn(numer))
 
 
+class OperButton(ttk.Button):
+    def __init__(self, master, symbol, kalkulator):
+        super().__init__(master, text=str(symbol), command=lambda: kalkulator.click_oper_btn(symbol))
+
+
+class Operacja:
+    def __init__(self):
+        self.oper = None
+
+    def set(self, symbol):
+        if symbol != "=":
+            self.oper = symbol
+
+    def oblicz(self, zmn1, zmn2):
+        x = None
+        if self.oper == "+":
+            x = zmn1.drop() + zmn2.drop()
+        elif self.oper == "-":
+            x = zmn1.drop() - zmn2.drop()
+        elif self.oper == "*":
+            x = zmn1.drop() * zmn2.drop()
+        elif self.oper == "/":
+            x = zmn1.drop() // zmn2.drop()
+        return int(x)
+
+    def drop(self):
+        return self.oper
+
+
+class Zmienna:
+    def __init__(self):
+        self.zmn = None
+
+    def set(self, zmienna):
+        self.zmn = int(zmienna)
+
+    def clear(self):
+        self.zmn = None
+
+    def add(self, var):
+        x = str(self.zmn) + str(var)
+        self.set(x)
+
+    def drop(self):
+        return self.zmn
+
+
 class Kalkulator:
     def __init__(self):
         self.zmn1 = None
@@ -44,7 +91,32 @@ class Kalkulator:
         self.root.eval('tk::PlaceWindow . center')  # sutawia okno na środek ekranu
 
     def click_num_btn(self, x):
-        self.display_text.set(x)
+
+        if self.oper is None:
+            if self.zmn1 is None:
+                self.zmn1 = Zmienna()
+                self.zmn1.set(x)
+            elif self.zmn1 is not None:
+                self.zmn1.add(x)
+            self.display_text.set(self.zmn1.drop())
+        elif self.oper is not None:
+            if self.zmn2 is None:
+                self.zmn2 = Zmienna()
+                self.zmn2.set(x)
+            elif self.zmn2 is not None:
+                self.zmn2.add(x)
+            self.display_text.set(self.zmn2.drop())
+
+    def click_oper_btn(self, symbol):
+        if self.oper is None and symbol != "=":
+            self.oper = Operacja()
+            self.oper.set(symbol)
+        elif self.oper is not None and symbol != "=":
+            self.oper.set(symbol)
+        elif self.oper is not None and symbol == "=":
+            self.suma = self.oper.oblicz(self.zmn1, self.zmn2)
+            self.display_text.set(self.suma)
+            self.zmn1, self.zmn2, self.oper = None, None, None
 
     def stworz_wyswietlacz(self):
         display_frame = ttk.Frame(self.root_frame)
@@ -62,14 +134,15 @@ class Kalkulator:
         NumButton(keyboard_frame, 7, self).grid(column=0, row=0, padx=pad, pady=pad, ipady=ipad)
         NumButton(keyboard_frame, 8, self).grid(column=1, row=0, padx=pad, pady=pad, ipady=ipad)
         NumButton(keyboard_frame, 9, self).grid(column=2, row=0, padx=pad, pady=pad, ipady=ipad)
-        NumButton(keyboard_frame, 0, self).grid(column=0, row=3, padx=pad, pady=pad, ipady=ipad, columnspan=2, sticky="NSWE")
+        NumButton(keyboard_frame, 0, self).grid(column=0, row=3, padx=pad, pady=pad, ipady=ipad, columnspan=2,
+                                                sticky="NSWE")
 
     def stworz_klawisze_operacji(self, keyboard_frame, pad, ipad):
-        ttk.Button(keyboard_frame, text="*").grid(column=3, row=0, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="/").grid(column=3, row=1, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="+").grid(column=3, row=2, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="-").grid(column=3, row=3, padx=pad, pady=pad, ipady=ipad)
-        ttk.Button(keyboard_frame, text="=").grid(column=2, row=3, padx=pad, pady=pad, ipady=ipad)
+        OperButton(keyboard_frame, "+", self).grid(column=3, row=2, padx=pad, pady=pad, ipady=ipad)
+        OperButton(keyboard_frame, "-", self).grid(column=3, row=3, padx=pad, pady=pad, ipady=ipad)
+        OperButton(keyboard_frame, "*", self).grid(column=3, row=0, padx=pad, pady=pad, ipady=ipad)
+        OperButton(keyboard_frame, "/", self).grid(column=3, row=1, padx=pad, pady=pad, ipady=ipad)
+        OperButton(keyboard_frame, "=", self).grid(column=2, row=3, padx=pad, pady=pad, ipady=ipad)
 
     def stworz_klawiature(self):
         pad, ipad = 2, 15
