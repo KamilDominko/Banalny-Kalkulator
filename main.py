@@ -20,16 +20,19 @@ class Operacja:
         if symbol != "=":
             self.oper = symbol
 
+    def clear(self):
+        self.oper = None
+
     def oblicz(self, zmn1, zmn2):
         x = None
         if self.oper == "+":
-            x = zmn1.drop() + zmn2.drop()
+            x = zmn1 + zmn2
         elif self.oper == "-":
-            x = zmn1.drop() - zmn2.drop()
+            x = zmn1 - zmn2
         elif self.oper == "*":
-            x = zmn1.drop() * zmn2.drop()
+            x = zmn1 * zmn2
         elif self.oper == "/":
-            x = zmn1.drop() // zmn2.drop()
+            x = zmn1 // zmn2
         return int(x)
 
     def drop(self):
@@ -56,31 +59,13 @@ class Zmienna:
 
 class Kalkulator:
     def __init__(self):
-        self.zmn1 = None
-        self.zmn2 = None
-        self.oper = None
+        self.zmn1 = Zmienna()
+        self.zmn2 = Zmienna()
+        self.oper = Operacja()
         self.suma = None
         self.root = None
         self.root_frame = None
         self.display_text = None
-
-    def ustaw_glowne_okno_na_srodek_ekranu(self):
-        """Ustawia środek okna na środek ekranu."""
-        screen_width, screen_height = self.pobierz_wymiary_ekranu()
-        center_x, center_y = self.ustaw_srodek_ekranu_dla_okna(screen_width, screen_height)
-        self.root.geometry(f'{300}x{300}+{center_x}+{center_y}')
-
-    def pobierz_wymiary_ekranu(self):
-        """Pobiera wymiary ekranu i zwraca WIDTH, HEIGHT"""
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        return screen_width, screen_height
-
-    def ustaw_srodek_ekranu_dla_okna(self, screen_width, screen_height):
-        """Oblicza punkt środka ekranu dla programu, zwraza X, Y"""
-        center_x = int(screen_width / 2 - self.root.winfo_width() / 2)
-        center_y = int(screen_height / 2 - self.root.winfo_height() / 2)
-        return center_x, center_y
 
     def ustawienia_programu(self):
         self.root.title("Banalny Kalkulator")  # ustawia tytuł programu
@@ -91,32 +76,45 @@ class Kalkulator:
         self.root.eval('tk::PlaceWindow . center')  # sutawia okno na środek ekranu
 
     def click_num_btn(self, x):
-
-        if self.oper is None:
-            if self.zmn1 is None:
-                self.zmn1 = Zmienna()
+        if self.oper.drop() is None:
+            if self.zmn1.drop() is None:
                 self.zmn1.set(x)
-            elif self.zmn1 is not None:
+                self.suma = None
+            elif self.zmn1.drop() is not None:
                 self.zmn1.add(x)
             self.display_text.set(self.zmn1.drop())
-        elif self.oper is not None:
-            if self.zmn2 is None:
-                self.zmn2 = Zmienna()
+        elif self.oper.drop() is not None:
+            if self.zmn2.drop() is None:
                 self.zmn2.set(x)
-            elif self.zmn2 is not None:
+            elif self.zmn2.drop() is not None:
                 self.zmn2.add(x)
             self.display_text.set(self.zmn2.drop())
 
+    def wykonaj_obliczenia(self):
+        self.suma = self.oper.oblicz(self.zmn1.drop(), self.zmn2.drop())
+        self.zmn1.clear()
+        self.zmn2.clear()
+        self.oper.clear()
+        self.display_text.set(self.suma)
+
     def click_oper_btn(self, symbol):
-        if self.oper is None and symbol != "=":
-            self.oper = Operacja()
-            self.oper.set(symbol)
-        elif self.oper is not None and symbol != "=":
-            self.oper.set(symbol)
-        elif self.oper is not None and symbol == "=":
-            self.suma = self.oper.oblicz(self.zmn1, self.zmn2)
-            self.display_text.set(self.suma)
-            self.zmn1, self.zmn2, self.oper = None, None, None
+        if symbol != "=":  # Czy NIE JEST to znak równości
+            if self.zmn1.drop() is None:  # ZMN1 = None
+                if self.suma is None:
+                    pass
+                elif self.suma is not None:
+                    self.zmn1.set(self.suma)
+                    self.oper.set(symbol)
+            elif self.zmn1.drop() is not None:  # ZMN1 != None
+                if self.zmn2.drop() is None:
+                    self.oper.set(symbol)
+                elif self.zmn2.drop() is not None:
+                    self.wykonaj_obliczenia()
+                    self.zmn1.set(self.suma)
+                    self.oper.set(symbol)
+        elif symbol == "=":  # Czy JEST to znak równości
+            if self.zmn1.drop() is not None and self.zmn2.drop() is not None:
+                self.wykonaj_obliczenia()
 
     def stworz_wyswietlacz(self):
         display_frame = ttk.Frame(self.root_frame)
